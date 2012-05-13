@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--NOTICE: Please open this file in your web browser. If presented with a security warning, you may safely tell it to allow the blocked content.-->
+<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD.\nAlthough MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD.\nNo support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+	<header>
+		<meta name="generator" content="MODX file generated with PP MODX Creator by tumba25 (online version)"/>
+		<license><![CDATA[http://opensource.org/licenses/gpl-license.php GNU General Public License v2]]></license>
+		<title lang="en"><![CDATA[Cleantalk. Spam protect update 2.9.4 to 3.0.4]]></title>
+		<description lang="en"><![CDATA[MOD moderates new posts in the topic, comparing them with existing and approved posts. To compare MOD uses an automatic moderation service http://cleantalk.ru.
+
+The MOD stops spam without using CAPTCHA.
+
+MOD correctly moderates posts on Russian, for other languages MOD can be used just to stop simple spam like ads links, emails, phone and icq numbers.]]></description>
+		<author-notes lang="en"><![CDATA[Posts prohibited publication marked the signature of the service, which specify reasons for blocking. Example below. The signature is appended to the end of each prohibited posts.
+
+*** Post forbidden to publish. Does not affect the subject material. Automoderator cleantalk.ru. ***]]></author-notes>
+		<author-group>
+			<author>
+				<realname><![CDATA[Denis Shagimuratov]]></realname>
+				<username><![CDATA[shagimuratov]]></username>
+				<homepage><![CDATA[http://cleantalk.ru]]></homepage>
+				<email><![CDATA[shagimuratov@cleantalk.ru]]></email>
+			</author>
+		</author-group>
+		<mod-version>3.0.4</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>300</time>
+			<target-version>3.0.10</target-version>
+		</installation>
+		<history>
+			<entry>
+				<date>2011-03-11</date>
+				<rev-version>1.0</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Module released.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-03-11</date>
+				<rev-version>1.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Fixed sql query to posts table.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-03-16</date>
+				<rev-version>1.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Now service sign in disallowed messages autoclean after moderator allows their.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-03-25</date>
+				<rev-version>1.2.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Bugfix. Disabled offtop checking for first post in topic.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-04-03</date>
+				<rev-version>1.3.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Changed offtop detection function. To detect offtop for the first post in topic Mod forms example text by 5 first approved posts in the same forum.]]></change>
+					<change><![CDATA[Added global option to enable/disable automoderation.]]></change>
+					<change><![CDATA[Added option to enable/disable automoderation per forum.]]></change>
+					<change><![CDATA[Added option to enable/disable offtop checking per forum.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-04-06</date>
+				<rev-version>1.3.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[MODx translated to English.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-05-14</date>
+				<rev-version>1.4.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Source code corrected using Coding guideliness from phpbb.com]]></change>
+					<change><![CDATA[Replaced native XML RPC library by library from phpxmlrpc.sourceforge.net]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-06-18</date>
+				<rev-version>1.4.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Disabled MOD options for Category and Link.]]></change>
+					<change><![CDATA[Renamed mod from "Automoderation and spam protect" to "Cleantalk. Spam protect service".]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-07-02</date>
+				<rev-version>2.1.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added option to enable/disable stoplist check per forum or global.]]></change>
+					<change><![CDATA[Function for spam and offtop detect moved to parse() in message_parser.php]]></change>
+					<change><![CDATA[Bugfix. Deleted quotation of previous posts from example text.]]></change>
+					<change><![CDATA[Bugfix. Removed hardcoded sql table names from SQL query in cleantalk_post().]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-07-09</date>
+				<rev-version>2.2.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added language selection for messages from cleantalk.ru]]></change>
+					<change><![CDATA[Added options to enable/disable moderation for Guests, New users and Registered users]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-07-13</date>
+				<rev-version>2.2.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Minor fixes in code.]]></change>
+					<change><![CDATA[Removed trigger_error() for events when autmoderation server is down. In this case messages will send to moderate queue.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-07-20</date>
+				<rev-version>2.2.3</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Minor fixes in code.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-08-07</date>
+				<rev-version>2.3.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added senders ip, email and username check over http://www.stopforumspam.com]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-08-13</date>
+				<rev-version>2.4.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[A new user check at blacklist by IP, email and nickname.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-09-05</date>
+				<rev-version>2.5.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Changed policy for senders from blacklists. Now messages from these users hardly stop at post page.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-11-12</date>
+				<rev-version>2.6.1</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added feedback messages to cleantalk.ru servers after approve/disapprove posts.]]></change>
+					<change><![CDATA[Added logging after deny user registration and block posts by black lists.]]></change>
+					<change><![CDATA[Denied registration with UTC-12.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-12-11</date>
+				<rev-version>2.6.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Fixed bug with NULL object of Cleantalk class when cleantalk_post() executed twice.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2011-12-25</date>
+				<rev-version>2.7.2</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Fixed bug with message check from Administrators and Global moderators when enabled checking for Registered users.]]></change>
+					<change><![CDATA[Optimized cleantalk_post().]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2012-01-05</date>
+				<rev-version>2.7.3</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Tested with phpBB 3.0.10.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2012-02-28</date>
+				<rev-version>2.8.3</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added users IP resolving for forums behind reverse proxy.]]></change>
+					<change><![CDATA[Disabled warnings for Call-time by reference.]]></change>
+					<change><![CDATA[Changed default server URL.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2012-03-01</date>
+				<rev-version>2.8.4</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added UMIL support.]]></change>
+					<change><![CDATA[Fixed bug with nulled sender_id in cleantalk.class.php.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2012-03-23</date>
+				<rev-version>2.9.4</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Added auto switch between servers in pool moderate.cleantalk.ru for all XML RPC functions.]]></change>
+					<change><![CDATA[Added feedback to moderate.cleantalk.ru after user delete.]]></change>
+					<change><![CDATA[Added one click "Delete user" button to user profile.]]></change>
+					<change><![CDATA[Added color highlight for stop words.]]></change>
+					<change><![CDATA[Optimized a moderation code.]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2012-05-03</date>
+				<rev-version>3.0.4</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Fixed DNS requests for PHP less than 5.3.0]]></change>
+					<change><![CDATA[Added test of subject when topic starts.]]></change>
+					<change><![CDATA[Added test for registration submit time.]]></change>
+					<change><![CDATA[Added test for enabled JavaScript during registration.]]></change>
+				</changelog>
+			</entry>
+		</history>
+	</header>
+	<action-group>
+		<copy>
+			<file from="root/includes/cleantalk.class.php" to="includes/cleantalk.class.php"/>
+			<file from="root/includes/cleantalk.php" to="includes/cleantalk.php"/>
+			<file from="root/update_cleantalk_mod.php" to="update_cleantalk_mod.php"/>
+			<file from="root/umil/umil.php" to="umil/umil.php"/>
+		</copy>
+		<open src="posting.php">
+			<edit>
+				<find><![CDATA[	// Begin: cleantalk.ru moderation
+	if ($config['ct_enable'] && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && !$preview)
+	{
+		$forum_id = request_var('f', 0); 
+		$topic_id = request_var('t', 0); 
+		$subject = request_var('subject', 'null'); 
+		$username = utf8_normalize_nfc(request_var('username', '', true));
+
+		// Use name from session only if user is registered. Cause 'Anonymous' name often blacklisted.
+		if ($username === '' && $user->data['is_registered'])
+		{ 
+			$username = $user->data['username']; 
+		}
+		
+		if (!function_exists('cleantalk_post'))
+		{
+			include($phpbb_root_path . 'includes/cleantalk.' . $phpEx);
+		}
+
+		$moderate = 0; // Flag to start moderation
+		$ct_admin = 0; // User is an admin 
+		$ct_gmoderator = 0; // User is global moderator 
+
+		$sql = 'SELECT enable_stoplist_check, ct_moderate_guests, ct_moderate_newly_registered, ct_moderate_registered, ct_allow_links FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . (int) $forum_id;
+		$result = $db->sql_query($sql);
+		$ct_forum = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		
+		$sql = 'SELECT g.group_name FROM ' . GROUPS_TABLE . ' g, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug where
+			ug.user_id=u.user_id and ug.group_id=g.group_id and g.group_type = ' . GROUP_SPECIAL . ' and u.user_id = ' . (int) $user->data['user_id'];
+
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result)){
+			if ($row['group_name'] === 'GLOBAL_MODERATORS')
+			{
+				$ct_gmoderator = 1;
+			}
+			if ($row['group_name'] === 'ADMINISTRATORS')
+			{
+				$ct_admin = 1;
+			}
+			if ($moderate)
+			{
+				continue; // Skip loop if $moderate is on
+			}
+			if (($row['group_name'] === 'GUESTS' && $ct_forum['ct_moderate_guests']) || ($row['group_name'] === 'NEWLY_REGISTERED' && $ct_forum['ct_moderate_newly_registered']) || ($row['group_name'] === 'REGISTERED' && $ct_forum['ct_moderate_registered']))
+			{
+				$moderate  = 1;	
+			}	
+		}
+		// Disable moderation if message from administration
+		if ($moderate && ($ct_admin || $ct_gmoderator))
+		{
+			$moderate  = 0;	
+		}
+		$db->sql_freeresult($result);
+		
+		if ($moderate)
+		{	
+			$ct_response = cleantalk_post($message_parser->message, $forum_id, $topic_id, $username, $ct_forum);
+		}
+		
+		if (isset($ct_response['allow']) && isset($ct_response['blacklisted']) && !$ct_response['allow'] && $ct_response['blacklisted'])
+		{
+			add_log('user', null, $ct_response['comment']);
+			$error[] = $ct_response['comment'];
+		}
+		
+		if (isset($ct_response['stop_words']) && $post_data['enable_bbcode'])
+		{
+			foreach (explode(':', $ct_response['stop_words']) as $word)
+			{
+				$message_parser->message = preg_replace("/($word)/ui", '[color=#FF1000]' . "$1" . '[/color]', $message_parser->message); 
+			}
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
+		
+	}
+	// End: cleantalk.ru moderation]]></find>
+				<action type="replace-with"><![CDATA[	// Begin: cleantalk.ru moderation
+	if ($config['ct_enable'] && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && !$preview)
+	{
+		$forum_id = request_var('f', 0); 
+		$topic_id = request_var('t', 0); 
+		$subject = utf8_normalize_nfc(request_var('subject', '', true)); 
+		$username = utf8_normalize_nfc(request_var('username', '', true));
+
+		// Use name from session only if user is registered. Cause 'Anonymous' name often blacklisted.
+		if ($username === '' && $user->data['is_registered'])
+		{ 
+			$username = $user->data['username']; 
+		}
+		
+		if (!function_exists('cleantalk_post'))
+		{
+			include($phpbb_root_path . 'includes/cleantalk.' . $phpEx);
+		}
+
+		$moderate = 0; // Flag to start moderation
+		$ct_admin = 0; // User is an admin 
+		$ct_gmoderator = 0; // User is global moderator 
+
+		$sql = 'SELECT enable_stoplist_check, ct_moderate_guests, ct_moderate_newly_registered, ct_moderate_registered, ct_allow_links FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . (int) $forum_id;
+		$result = $db->sql_query($sql);
+		$ct_forum = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		
+		$sql = 'SELECT g.group_name FROM ' . GROUPS_TABLE . ' g, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug where
+			ug.user_id=u.user_id and ug.group_id=g.group_id and g.group_type = ' . GROUP_SPECIAL . ' and u.user_id = ' . (int) $user->data['user_id'];
+
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result)){
+			if ($row['group_name'] === 'GLOBAL_MODERATORS')
+			{
+				$ct_gmoderator = 1;
+			}
+			if ($row['group_name'] === 'ADMINISTRATORS')
+			{
+				$ct_admin = 1;
+			}
+			if ($moderate)
+			{
+				continue; // Skip loop if $moderate is on
+			}
+			if (($row['group_name'] === 'GUESTS' && $ct_forum['ct_moderate_guests']) || ($row['group_name'] === 'NEWLY_REGISTERED' && $ct_forum['ct_moderate_newly_registered']) || ($row['group_name'] === 'REGISTERED' && $ct_forum['ct_moderate_registered']))
+			{
+				$moderate  = 1;	
+			}	
+		}
+		// Disable moderation if message from administration
+		if ($moderate && ($ct_admin || $ct_gmoderator))
+		{
+			$moderate  = 0;	
+		}
+		$db->sql_freeresult($result);
+		
+		if ($moderate)
+		{	
+			$ct_response = cleantalk_post($message_parser->message, $forum_id, $topic_id, $username, $ct_forum, $subject);
+		}
+		
+		if (isset($ct_response['allow']) && isset($ct_response['blacklisted']) && !$ct_response['allow'] && $ct_response['blacklisted'])
+		{
+			add_log('user', null, $ct_response['comment']);
+			$error[] = $ct_response['comment'];
+		}
+		
+		if (isset($ct_response['stop_words']) && $post_data['enable_bbcode'])
+		{
+			foreach (explode(':', $ct_response['stop_words']) as $word)
+			{
+				$message_parser->message = preg_replace("/($word)/ui", '[color=#FF1000]' . "$1" . '[/color]', $message_parser->message); 
+			}
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
+		
+	}
+	// End: cleantalk.ru moderation]]></action>
+			</edit>
+		</open>
+		<open src="includes/ucp/ucp_register.php">
+			<edit>
+				<find><![CDATA[			// Begin: cleantalk.ru moderation
+			if (!sizeof($error) && $config['ct_newuser'] && $config['ct_enable'])
+			{
+				if (!function_exists('ct_error_mail') || !function_exists('ct_session_ip') || !function_exists('ct_send_request'))
+				{
+					include($phpbb_root_path . 'includes/cleantalk.' . $phpEx);
+				}	
+				$ct_response = null; // XML::RPC response from cleantalk.ru server
+
+				$params = array(
+						'session_ip' => ct_session_ip($user->data['session_ip']),
+						'user_email' => $data['email'],
+						'user_name' => $data['username'],
+						'engine' => $config['ct_agent'],
+						'tz' => $data['tz']
+				);
+				
+				// Check user at cleantalk.ru database 
+				$ct_response = ct_send_request('check_newuser', $params);
+
+				if(is_object($ct_response) && $ct_response->faultCode())
+				{
+					ct_error_mail($ct_response);
+					$ct_response = null; // Because is object 
+				}
+				if (isset($ct_response['allow']) && !$ct_response['allow'])
+				{
+					$error[] = $ct_response['comment'];
+					add_log('user', null, sprintf($user->lang['CT_USER_DENY'], $data['username'], $data['email']) . ' '. $ct_response['comment']);
+				}
+			}
+			// End: cleantalk.ru moderation]]></find>
+				<action type="replace-with"><![CDATA[			// Begin: cleantalk.ru moderation
+			if (!sizeof($error) && $config['ct_newuser'] && $config['ct_enable'])
+			{
+				if (!function_exists('ct_error_mail') || !function_exists('ct_session_ip') || !function_exists('ct_send_request'))
+				{
+					include($phpbb_root_path . 'includes/cleantalk.' . $phpEx);
+				}	
+				$ct_response = null; // XML::RPC response from cleantalk.ru server
+				$ct_checkjs = request_var('ct_checkjs', '', true);
+				
+				if (!($user->theme['theme_name'] === 'prosilver' || $user->theme['theme_name'] === 'subsilver2'))
+					$ct_checkjs = null;
+
+				if ($ct_checkjs === '')
+					$ct_checkjs = 0;
+					
+				session_start();
+				
+				$params = array(
+						'session_ip' => ct_session_ip($user->data['session_ip']),
+						'user_email' => $data['email'],
+						'user_name' => $data['username'],
+						'engine' => $config['ct_agent'],
+						'tz' => $data['tz'],
+						'submit_time' => time() - $_SESSION['reg_access_time'],
+						'js_on' => $ct_checkjs, 
+				);
+				
+				// Check user at cleantalk.ru database 
+				$ct_response = ct_send_request('check_newuser', $params);
+
+				if(is_object($ct_response) && $ct_response->faultCode())
+				{
+					ct_error_mail($ct_response);
+					$ct_response = null; // Because is object 
+				}
+				if (isset($ct_response['allow']) && !$ct_response['allow'])
+				{
+					$error[] = $ct_response['comment'];
+					add_log('user', null, sprintf($user->lang['CT_USER_DENY'], $data['username'], $data['email']) . ' '. $ct_response['comment']);
+				}
+			}
+			// End: cleantalk.ru moderation
+]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[		$s_hidden_fields = array(
+			'agreed'		=> 'true',
+			'change_lang'	=> 0,
+		);
+]]></find>
+				<action type="before-add"><![CDATA[		// Begin: cleantalk.ru moderation
+		if (!isset($_SESSION))
+			session_start();
+		$_SESSION['reg_access_time'] = time();
+		// End: cleantalk.ru moderation
+]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/ucp_register.html">
+			<edit>
+				<find><![CDATA[</div>
+</form>]]></find>
+				<action type="after-add"><![CDATA[<!-- Begin: cleantalk.ru moderation -->
+<script type="text/javascript">
+// ]]>&lt;![CDATA[<![CDATA[
+	var ct_checkjs = document.createElement("input");
+	ct_checkjs.setAttribute("type", "hidden");
+	ct_checkjs.setAttribute("name", "ct_checkjs");
+	ct_checkjs.setAttribute("id", "ct_checkjs");
+	ct_checkjs.setAttribute("value", "1");
+	document.forms['register'].appendChild(ct_checkjs);
+// ]]>]]&gt;<![CDATA[
+</script>
+<!-- End: cleantalk.ru moderation -->]]></action>
+			</edit>
+		</open>
+		<open src="styles/subsilver2/template/memberlist_view.html">
+			<edit>
+				<find><![CDATA[			<!-- IF U_SWITCH_PERMISSIONS -->
+				<tr>
+					<td class="genmed" align="center">[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</td>
+				</tr>
+			<!-- ENDIF -->
+]]></find>
+				<action type="after-add"><![CDATA[			<!-- IF U_USER_DEL --> 
+				<tr>
+					<td class="genmed" align="center">[ <a href="{U_USER_DEL}"><span style="color: red;">{L_DELETE_USER}</span></a> ]</td>
+				</tr>
+			<!-- ENDIF -->
+]]></action>
+			</edit>
+		</open>
+		<open src="styles/subsilver2/template/overall_footer.html">
+			<edit>
+				<find><![CDATA[<span class="copyright">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+]]></find>
+				<action type="after-add"><![CDATA[	<!-- IF CLEANTALK_INFO --><br />{CLEANTALK_INFO}<!-- ENDIF -->]]></action>
+			</edit>
+		</open>
+		<open src="styles/subsilver2/template/ucp_register.html">
+			<edit>
+				<find><![CDATA[</table>
+{S_FORM_TOKEN}
+</form>
+]]></find>
+				<action type="after-add"><![CDATA[<!-- Begin: cleantalk.ru moderation -->
+<script type="text/javascript">
+// ]]>&lt;![CDATA[<![CDATA[
+	var ct_checkjs = document.createElement("input");
+	ct_checkjs.setAttribute("type", "hidden");
+	ct_checkjs.setAttribute("name", "ct_checkjs");
+	ct_checkjs.setAttribute("id", "ct_checkjs");
+	ct_checkjs.setAttribute("value", "1");
+	document.forms['register'].appendChild(ct_checkjs);
+// ]]>]]&gt;<![CDATA[
+</script>
+<!-- End: cleantalk.ru moderation -->
+]]></action>
+			</edit>
+		</open>
+		<php-installer><![CDATA[update_cleantalk_mod.php]]></php-installer>
+		<diy-instructions lang="en"><![CDATA[1. Purge cache.
+2. Enter Authorization key at,
+ACP -> GENERAL -> Board Configuration -> Board features -> Cleantalk. Spam protect
+3. Enable New users check at the same place.
+4. Enable moderation for selected forums,
+ACP -> Forums -> Manage forums -> FORUM_NAME -> Cleantalk. Spam protect
+5. Register a new user to check registration proccess.
+6. Post a message to forum where have enabled Cleantalk.]]></diy-instructions>
+	</action-group>
+</mod>
