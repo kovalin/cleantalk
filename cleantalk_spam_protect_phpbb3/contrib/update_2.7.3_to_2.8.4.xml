@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--NOTICE: Please open this file in your web browser. If presented with a security warning, you may safely tell it to allow the blocked content.-->
+<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD.\nAlthough MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD.\nNo support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+	<header>
+		<meta name="generator" content="MODX file generated with PP MODX Creator by tumba25 (online version)"/>
+		<license><![CDATA[http://opensource.org/licenses/gpl-license.php GNU General Public License v2]]></license>
+		<title lang="en"><![CDATA[Cleantalk. Spam protect. Update from 2.7.3 to 2.8.4]]></title>
+		<description lang="en"><![CDATA[MOD moderates new posts in the topic, comparing them with existing and approved posts. To compare MOD uses an automatic moderation service http://cleantalk.ru.
+
+The MOD stops spam without using CAPTCHA.
+
+MOD correctly moderates posts on Russian, for other languages MOD can be used just to stop simple spam like ads links, emails, phone and icq numbers.]]></description>
+		<author-notes lang="en"><![CDATA[Posts prohibited publication marked the signature of the service, which specify reasons for blocking. Example below. The signature is appended to the end of each prohibited posts.
+
+*** Post forbidden to publish. Does not affect the subject material. Automoderator cleantalk.ru. ***]]></author-notes>
+		<author-group>
+			<author>
+				<realname><![CDATA[Denis Shagimuratov]]></realname>
+				<username><![CDATA[shagimuratov]]></username>
+				<homepage><![CDATA[http://cleantalk.ru]]></homepage>
+				<email><![CDATA[shagimuratov@cleantalk.ru]]></email>
+			</author>
+		</author-group>
+		<mod-version>2.8.4</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>300</time>
+			<target-version>3.0.10</target-version>
+		</installation>
+		<link-group>
+			<link type="language" href="ru.xml" lang="en">Russian language</link>
+		</link-group>
+	</header>
+	<action-group>
+		<copy>
+			<file from="root/includes/cleantalk.class.php" to="includes/cleantalk.class.php"/>
+			<file from="root/includes/cleantalk.php" to="includes/cleantalk.php"/>
+			<file from="root/install_cleantalk_mod.php" to="install_cleantalk_mod.php"/>
+			<file from="root/umil/umil.php" to="umil/umil.php"/>
+			<file from="root/language/en/mods/info_acp_cleantalk.php" to="language/en/mods/info_acp_cleantalk.php"/>
+		</copy>
+		<open src="includes/message_parser.php">
+			<edit>
+				<find><![CDATA[cleantalk_post($this->message, $forum_id, $topic_id, &$ct_response, $username, $ct_forum['enable_stoplist_check']);]]></find>
+				<action type="replace-with"><![CDATA[@cleantalk_post($this->message, $forum_id, $topic_id, &$ct_response, $username, $ct_forum['enable_stoplist_check']);]]></action>
+			</edit>
+		</open>
+		<open src="includes/ucp/ucp_register.php">
+			<edit>
+				<find><![CDATA[if (!function_exists('ct_error_mail'))]]></find>
+				<action type="replace-with"><![CDATA[if (!function_exists('ct_error_mail') || !function_exists('ct_session_ip'))]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[	if (!$ct->isAllowUser(array(
+ 						'ip' => $user->data['session_ip'],
+]]></find>
+				<action type="replace-with"><![CDATA[         if (!@$ct->isAllowUser(array(
+ 			'ip' => ct_session_ip($user->data['session_ip']),
+]]></action>
+			</edit>
+		</open>
+		<php-installer><![CDATA[install_cleantalk_mod.php]]></php-installer>
+		<diy-instructions lang="en"><![CDATA[1. Purge cache.
+2. Enter Authorization key at,
+ACP -> GENERAL -> Board Configuration -> Board features -> Cleantalk. Spam protect
+3. Enable New users check at the same place.
+4. Enable moderation for selected forums,
+ACP -> Forums -> Manage forums -> FORUM_NAME -> Cleantalk. Spam protect
+5. Register a new user to check registration proccess.
+6. Post a message to forum where have enabled Cleantalk.]]></diy-instructions>
+	</action-group>
+</mod>
