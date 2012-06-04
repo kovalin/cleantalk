@@ -8,15 +8,14 @@
  * @author Сleantalk team (shagimuratov@cleantalk.ru)
  * @copyright (C) 2011 - 2012 Сleantalk team (http://cleantalk.ru)
  * @license GNU/GPL: http://www.gnu.org/copyleft/gpl.html
- * 
+ *
  **/
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
 
-require(dirname(__FILE__).'/cleantalk.xmlrpc.php');
+
+//require_once ENGINE_DIR . '/modules/cleantalk/cleantalk.xmlrpc.php';
+//require_once 'cleantalk.xmlrpc.php';
+require_once ENGINE_DIR . '/modules/cleantalk/cleantalk.xmlrpc.php';
 
 class Cleantalk
 {
@@ -197,7 +196,7 @@ class Cleantalk
 		return @setcookie('ct_sender_id', $senderId);
 	}
 
-	
+
 	/**
 	 * Function XML-request
 	 * @param $method
@@ -230,13 +229,13 @@ class Cleantalk
 		$response = $response->value();
 		return true;
 	}
-	
+
 	/**
 	 * Function XML-request
 	 * @param $method
 	 * @param $params
 	 * @param $server_url
-	 * @return object|bool 
+	 * @return object|bool
 	 */
 	public function xmlRequest2($method, $params, $server_url = '')
 	{
@@ -251,27 +250,27 @@ class Cleantalk
 		);
 
 		$server_url = isset($server_url) ? $server_url : $this->config['server_url'];
-		
+
 		$ct_request = new xmlrpc_client($server_url);
 		$ct_request->request_charset_encoding = 'utf-8';
 		$ct_request->return_type = 'phpvals';
 		$ct_request->setDebug(0);
 		$response = $ct_request->send($ct_params);
-			
+
 		return $response;
 	}
-	
+
 	/**
-	 * Function DNS request 
+	 * Function DNS request
 	 * @param $host
-	 * @return array 
+	 * @return array
 	 */
 	public function get_servers_ip($host)
 	{
 		$response = null;
 		if (!isset($host))
 			return $response;
-		
+
 		if (function_exists('dns_get_record')){
 			foreach (dns_get_record($host, DNS_A) as $server){
 				$response[] = $server;

@@ -1,0 +1,27 @@
+<?php
+
+$lang = array_merge($lang, array (
+
+'ct_module_name'		=>	"Cleantalk. Spam protect",
+'ct_module_release'		=>	"1.1.0",
+'ct_not_installed'		=>	"Модуль <b>Cleantalk. Spam protect</b> не установлен.",
+'ct_installed'		=>	"Теперь можете настроить модуль <b>Cleantalk. Spam protect</b>. Спасибо, что выбрали нас.",
+'ct_uninstalled'		=>	"Модуль <b>Cleantalk. Spam protect</b> удален. Спасибо, что пользовались нашими услугами.",
+'ct_module_about'		=>	"Проверка комментариев на спам.",
+'ct_main_setings'		=>	"Основные параметры",
+'ct_server_setings'		=>	"Настройки сервера",
+'ct_on'		=>	"Включено",
+'ct_off'		=>	"Отключено",
+'ct_groups'		=>	"Группы пользователей",
+'ct_groups_all'		=>	"- Все -",
+'ct_stop_words'		=>	"Проверка по стоп-словам",
+'ct_links'		=>	"Разрешать ссылки",
+'ct_key'		=>	"Ключ доступа<br><a href=\"https://cleantalk.ru/install/dle?step=2\">Кликните, чтобы получить ключ</a>",
+'ct_server_url'		=>	"URL сервера",
+'ct_language'		=>	"Язык системных сообщений",
+'ct_save_button'		=>	"Сохранить",
+'ct_email_cant_connect_subject'		=>	"Проблемах с сервером cleantalk.ru",
+'ct_email_cant_connect_text'		=>	"Уважаемый администратор,\n\nуведомляем вас о возникших проблемах с сервером cleantalk.ru.\n\n*** Can't connect to cleantalk.ru ***",
+));
+
+?>
