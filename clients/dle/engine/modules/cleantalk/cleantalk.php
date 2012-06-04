@@ -85,6 +85,7 @@ class CleantalkModule {
         $this->CT = $this->getCleantalk();
         $this->ip = $_SERVER['REMOTE_ADDR'];
         $this->lang = $this->getFullLang();
+		$this->user_ip = isset($_SERVER['REMOTE_ADDR']) && preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/", $_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null; 
     }
 
     /**
