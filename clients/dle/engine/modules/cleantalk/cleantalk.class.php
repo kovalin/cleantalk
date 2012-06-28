@@ -2,7 +2,7 @@
 /**
  * Cleantalk base class
  *
- * @version 0.4
+ * @version 0.5
  * @package Cleantalk
  * @subpackage Base
  * @author Сleantalk team (shagimuratov@cleantalk.ru)
@@ -12,9 +12,6 @@
  **/
 
 
-
-//require_once ENGINE_DIR . '/modules/cleantalk/cleantalk.xmlrpc.php';
-//require_once 'cleantalk.xmlrpc.php';
 require_once ENGINE_DIR . '/modules/cleantalk/cleantalk.xmlrpc.php';
 
 class Cleantalk
@@ -46,7 +43,7 @@ class Cleantalk
 	 * @param $response
 	 * @return bool|int
 	 */
-	public function isAllowUser($params, &$response)
+	public function isAllowUser($params)
 	{
 		$params = array_merge(array(
 				$params['engine'] => '',
@@ -55,7 +52,7 @@ class Cleantalk
 				$params['username'] => '',
 			), $params);
 
-		return $this->xmlRequest(
+		$response = $this->xmlRequest(
 			'check_newuser',
 			array(
 				$this->config['auth_key'],
@@ -64,9 +61,10 @@ class Cleantalk
 				$params['ip'],
 				$params['email'],
 				$params['username'],
-			),
-			&$response
+			)
 		);
+
+                return $response;
 	}
 
 	/**
@@ -75,7 +73,7 @@ class Cleantalk
 	 * @param $response
 	 * @return bool|int
 	 */
-	public function isAllowMessage($params, &$response)
+	public function isAllowMessage($params)
 	{
 		$params = array_merge(array(
 				$params['message'] => '',
@@ -90,7 +88,7 @@ class Cleantalk
 
 		$sender_id = $this->getSenderId();
 
-		$result = $this->xmlRequest(
+		$response = $this->xmlRequest(
 			'check_message',
 			array(
 				$params['message'],
@@ -104,14 +102,13 @@ class Cleantalk
 				$params['user_email'],
 				$params['user_name'],
 				$sender_id
-			),
-			&$response
+			)
 		);
 
 		if($sender_id == '' && isset($response['sender_id']))
 			$this->setSenderId($response['sender_id']);
 
-		return $result;
+		return $response;
 	}
 
 	/**
@@ -120,21 +117,21 @@ class Cleantalk
 	 * @param $response
 	 * @return bool|int
 	 */
-	public function sendFeedback($params, &$response)
+	public function sendFeedback($params)
 	{
 		$feedback = array();
 		foreach($params['moderate'] as $msgFeedback)
 			$feedback[] = $msgFeedback['msg_hash'] . ':' . intval($msgFeedback['is_allow']);
 		$feedback = implode(';', $feedback);
 
-		return $this->xmlRequest(
+		$response = $this->xmlRequest(
 			'send_feedback',
 			array(
 				$this->config['auth_key'],
 				$feedback,
-			),
-			&$response
+			)
 		);
+                return $response;
 	}
 
 	/**
@@ -204,7 +201,7 @@ class Cleantalk
 	 * @param $response
 	 * @return bool|int
 	 */
-	private function xmlRequest($method, $params, &$response)
+	private function xmlRequest($method, $params)
 	{
 		$xmlvars = array();
 		foreach ($params as $param)
@@ -226,8 +223,7 @@ class Cleantalk
 			return false;
 		}
 
-		$response = $response->value();
-		return true;
+		return $response->value();
 	}
 
 	/**

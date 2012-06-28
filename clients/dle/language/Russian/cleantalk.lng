@@ -1,11 +1,15 @@
 <?php
 
-$lang = array_merge($lang, array (
+$ct_lang = array (
 
 'ct_module_name'		=>	"Cleantalk. Spam protect",
-'ct_module_release'		=>	"1.1.0",
+'ct_module_release'		=>	"1.1.2",
 'ct_not_installed'		=>	"Модуль <b>Cleantalk. Spam protect</b> не установлен.",
 'ct_installed'		=>	"Теперь можете настроить модуль <b>Cleantalk. Spam protect</b>. Спасибо, что выбрали нас.",
+'ct_install_button'		=>	"Установить",
+'ct_install_next'		=>	"Продолжить",
+'ct_uninstall_button'		=>	"удалить модуль",
+'ct_uninstall_confirm'		=>	"Вы уверены? Удалить модуль Cleantalk. Spam protect?",
 'ct_uninstalled'		=>	"Модуль <b>Cleantalk. Spam protect</b> удален. Спасибо, что пользовались нашими услугами.",
 'ct_module_about'		=>	"Проверка комментариев на спам.",
 'ct_main_setings'		=>	"Основные параметры",
@@ -22,6 +26,14 @@ $lang = array_merge($lang, array (
 'ct_save_button'		=>	"Сохранить",
 'ct_email_cant_connect_subject'		=>	"Проблемах с сервером cleantalk.ru",
 'ct_email_cant_connect_text'		=>	"Уважаемый администратор,\n\nуведомляем вас о возникших проблемах с сервером cleantalk.ru.\n\n*** Can't connect to cleantalk.ru ***",
-));
+'ct_reset_success'		=>	"Модуль <b>Cleantalk. Spam protect</b> переустановлен. Спасибо, что выбрали нас!"
+);
+
+$ct_lang = charset($ct_lang, $config['charset']);
+
+$lang = array_merge($lang, $ct_lang);
+
+
+
 
 ?>

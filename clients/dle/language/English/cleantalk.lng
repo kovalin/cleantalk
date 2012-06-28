@@ -1,12 +1,18 @@
 <?php
 
-$lang = array_merge($lang, array (
-
-// 9.4
+$ct_lang = array_merge($lang, array (
 'ct_module_name'		=>	"Cleantalk. Spam protect",
+'ct_module_release'		=>	"1.1.2",
+'ct_not_installed'		=>	"Module <b>Cleantalk. Spam protect</b> not installed.",
+'ct_installed'		=>	"Now you can configure the module <b>Cleantalk. Spam protect</b>. Thank you for choosing us.",
+'ct_install_button'		=>	"Install",
+'ct_install_next'		=>	"Next",
+'ct_uninstall_button'		=>	"delete module",
+'ct_uninstall_confirm'		=>	"Are you sure? Remove the module Cleantalk. Spam protect?",
+'ct_uninstalled'		=>	"Module <b>Cleantalk. Spam protect</b> deleted. Thank you for using our services.",
+'ct_module_about'		=>	"Check for spam comments.",
 'ct_main_setings'		=>	"Main settings",
 'ct_server_setings'		=>	"Server settings",
-'ct_state'		=>	"State",
 'ct_on'		=>	"Enabled",
 'ct_off'		=>	"Disabled",
 'ct_groups'		=>	"User groups",
@@ -16,8 +22,25 @@ $lang = array_merge($lang, array (
 'ct_key'		=>	"Access key<br><a href=\"https://cleantalk.ru/install/joomla15?step=2\">Click here to get key</a>",
 'ct_server_url'		=>	"Cleantalk server URL",
 'ct_language'		=>	"System messages language",
+'ct_save_button'		=>	"Save",
 'ct_email_cant_connect_subject'		=>	"Problems with the server cleantalk.ru",
 'ct_email_cant_connect_text'		=>	"Dear administrator, \n\n alert you experience any problems with the server cleantalk.ru. \n\n *** Can't connect to cleantalk.ru ***",
+'ct_reset_success'		=>	"Module <b>Cleantalk. Spam protect</b> reinstalled. Thank you for choosing us!",
+
+
+// 9.4
+
+
+'ct_state'		=>	"State",
+
+
+
+
+
 ));
+
+$ct_lang = charset($ct_lang, $config['charset']);
+
+$lang = array_merge($lang, $ct_lang);
 
 ?>

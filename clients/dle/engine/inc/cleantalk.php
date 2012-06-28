@@ -9,6 +9,9 @@ if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
   } */
 
 
+require_once ENGINE_DIR . '/modules/cleantalk/ct_functions.php';
+
+
 if (file_exists(ROOT_DIR . '/language/' . $selected_language . '/cleantalk.lng')) {
     require_once (ROOT_DIR . '/language/' . $selected_language . '/cleantalk.lng');
 }
@@ -66,9 +69,6 @@ function ct_options_form($options, $selected) {
     return $output;
 }
 
-
-require_once ENGINE_DIR . '/modules/cleantalk/ct_functions.php';
-
 /**
  * Установлен модуль?
  */
@@ -81,12 +81,14 @@ if (!$ct_result['c']) {
 
         $dle_api->install_admin_module('cleantalk', $lang['ct_module_name'], $lang['ct_module_about'], 'cleantalk.png', '1');
 
+        $ct_table_charset = ($config['charset'] == 'windows-1251') ? 'cp1251' : 'utf8';
+
         $db->query("CREATE TABLE IF NOT EXISTS `" . PREFIX . "_ct_config` (
                     `key` varchar(32) NOT NULL,
                     `value` text NOT NULL,
                     `serialized` tinyint(1) NOT NULL DEFAULT '0',
                     PRIMARY KEY(`key`)
-	) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+	) ENGINE=MyISAM DEFAULT CHARSET={$ct_table_charset};");
 
         $db->query("INSERT IGNORE INTO `" . PREFIX . "_ct_config` (`key`, `value`, `serialized`) VALUES
 			('ct_groups', 'a:1:{i:0;s:1:\"5\";}', '1'),
@@ -94,6 +96,9 @@ if (!$ct_result['c']) {
 			('ct_links', '0', '0'),
 			('ct_language', 'Russian', '0'),
 			('ct_key', '', '0'),
+			('ct_work_url', '', '0'),
+			('ct_server_ttl', '', '0'),
+			('ct_server_changed', '', '0'),
 			('ct_server_url', 'http://moderate.cleantalk.ru', '0')");
 
         ct_echoheader($lang['ct_module_name'] . ' ' . $lang['ct_module_release'], "cleantalk");
@@ -101,7 +106,7 @@ if (!$ct_result['c']) {
             <form method="POST" action="admin.php?mod=cleantalk">
                     <center>
             {$lang['ct_installed']}<br><br>
-                <input type="submit" value="Продолжить">
+                <input type="submit" value="{$lang['ct_install_next']}">
                 <center></form>
 HTML;
         ct_echofooter();
@@ -118,7 +123,7 @@ HTML;
         <center>
 {$lang['ct_not_installed']}<br><br>
     <input type="hidden" value="1" name="ct_install">
-    <input type="submit" value="Установить">
+    <input type="submit" value="{$lang['ct_install_button']}">
     <center>
 </form>
 HTML;
@@ -139,7 +144,7 @@ if (isset($_POST['ct_uninstall'])) {
             <form method="POST" action="admin.php">
                     <center>
             {$lang['ct_uninstalled']}<br><br>
-                <input type="submit" value="Продолжить">
+                <input type="submit" value="{$lang['ct_install_next']}">
                 <center></form>
 HTML;
     ct_echofooter();
@@ -149,6 +154,43 @@ HTML;
  * Конфиг
  */
 list($ct_config, $ct_config_serialized) = ct_get_config($db);
+
+if (isset($_GET['reset'])) {
+
+    $db->query("DROP TABLE IF EXISTS  `" . PREFIX . "_ct_config`");
+
+    $ct_table_charset = ($config['charset'] == 'windows-1251') ? 'cp1251' : 'utf8';
+
+    $db->query("CREATE TABLE IF NOT EXISTS `" . PREFIX . "_ct_config` (
+                    `key` varchar(32) NOT NULL,
+                    `value` text NOT NULL,
+                    `serialized` tinyint(1) NOT NULL DEFAULT '0',
+                    PRIMARY KEY(`key`)
+	) ENGINE=MyISAM DEFAULT CHARSET={$ct_table_charset};");
+
+        $db->query("INSERT IGNORE INTO `" . PREFIX . "_ct_config` (`key`, `value`, `serialized`) VALUES
+			('ct_groups', '".  serialize(@$ct_config['ct_groups'])."', '1'),
+			('ct_stop_words', '".@$ct_config['ct_stop_words']."', '0'),
+			('ct_links', '".@$ct_config['ct_links']."', '0'),
+			('ct_language', '".@$ct_config['ct_language']."', '0'),
+			('ct_key', '".@$ct_config['ct_key']."', '0'),
+			('ct_work_url', '".@$ct_config['ct_work_url']."', '0'),
+			('ct_server_ttl', '".@$ct_config['ct_server_ttl']."', '0'),
+			('ct_server_changed', '".@$ct_config['ct_server_changed']."', '0'),
+			('ct_server_url', '".@$ct_config['ct_server_url']."', '0')");
+
+    ct_echoheader($lang['ct_module_name'] . ' ' . $lang['ct_module_release'], "cleantalk");
+    echo <<<HTML
+            <form method="POST" action="admin.php?mod=cleantalk">
+                    <center>
+            {$lang['ct_reset_success']}<br><br>
+                <input type="submit" value="{$lang['ct_install_next']}">
+                <center></form>
+HTML;
+    ct_echofooter();
+    exit();
+}
+
 /**
  * Сохранение изменений
  */
@@ -265,7 +307,7 @@ echo <<<HTML
 
 <form method="POST" action="" name="form_module_delete">
                     <input type="hidden" value="1" name="ct_uninstall">
-<br><br><div style="float: right; color: red; cursor: pointer;" onclick="if (confirm('Вы уверены? Удалить модуль {$lang['ct_module_name']}?')) { document.form_module_delete.submit(); } event.returnValue = false; return false;"><img src="pic/delete.png" border="0" style="vertical-align: middle;"> удалить модуль</div>
+<br><br><div style="float: right; color: red; cursor: pointer;" onclick="if (confirm('{$lang['ct_uninstall_confirm']}')) { document.form_module_delete.submit(); } event.returnValue = false; return false;"><img src="pic/delete.png" border="0" style="vertical-align: middle;"> {$lang['ct_uninstall_button']}</div>
 </form>
 HTML;
 ct_echofooter();

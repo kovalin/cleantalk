@@ -2,10 +2,13 @@
 
 После
 $_SESSION['sec_code_session'] = 0;
+
 Добавить
 // Begin: cleantalk.ru
 require_once ENGINE_DIR . '/modules/cleantalk/addcomments.php';
 // End: cleantalk.ru
+
+
 
 
 ***** Редактировать файл - engine/modules/register.php
@@ -29,10 +32,12 @@ if ($Ct->isAllowUser($email, $name) === false) {
 }
 // End: cleantalk.ru
 
+
 Перед строками
 $tpl->copy_template .= <<<HTML
 <script language='javascript' type="text/javascript">
 <!--
+function reload () {
 
 Добавить
 // Begin: cleantalk.ru
@@ -42,6 +47,22 @@ $("#name").val("'.$name.'"); $("input[name$=\'email\']").val("'.$email.'");
 </script>';
  }
 // End: cleantalk.ru
+
+// Begin: cleantalk.ru
+$tpl->copy_template .= "
+<script type=\"text/javascript\">
+// <![CDATA[
+document.getElementById(\"ct_checkjs\").value = 1;
+// ]]>
+</script>";
+$_SESSION['ct_submit_register_time'] = time();
+// End: cleantalk.ru
+
+После:
+<input name=\"submit_reg\" type=\"hidden\" id=\"submit_reg\" value=\"submit_reg\" />
+
+Добавить:
+<input type=\"hidden\" name=\"ct_checkjs\" id=\"ct_checkjs\" value=\"0\" />
 
 
 ***** Редактировать файл - engine/modules/show.full.php
@@ -53,6 +74,33 @@ if( $allow_comments AND $news_found) {
 // Begin: cleantalk.ru
 $config['allow_cmod'] = true;
 // End: cleantalk.ru
+
+
+Заменить
+$tpl->copy_template = "<form  method=\"post\" name=\"dle-comments-form\" id=\"dle-comments-form\" action=\"{$_SESSION['referrer']}\">" . $tpl->copy_template . "
+		<input type=\"hidden\" name=\"subaction\" value=\"addcomment\" />{$hidden}
+		<input type=\"hidden\" name=\"post_id\" id=\"post_id\" value=\"$news_id\" /></form>";
+На
+// Begin: cleantalk.ru
+		$tpl->copy_template = "<form  method=\"post\" name=\"dle-comments-form\" id=\"dle-comments-form\" action=\"{$_SESSION['referrer']}\">" . $tpl->copy_template . "
+		<input type=\"hidden\" name=\"subaction\" value=\"addcomment\" />{$hidden}
+		<input type=\"hidden\" name=\"post_id\" id=\"post_id\" value=\"$news_id\" />
+                <input type=\"hidden\" name=\"ct_checkjs\" id=\"ct_checkjs\" value=\"0\" />
+                </form>
+                <script type=\"text/javascript\">
+                // <![CDATA[
+                document.getElementById(\"ct_checkjs\").value = 1;
+                // ]]>
+                </script>";
+
+
+                 $_SESSION['ct_submit_comment_time'] = time();
+
+                $tpl->copy_template .= '<br><a style="font-size: 12px; margin-left: 10px;" href="http://cleantalk.ru/dle" target="__blank">
+<b style="color: #009900;">Clean</b><b style="color: #777;">talk</b>
+</a><br><br>';
+                // End: cleantalk.ru
+
 
 
 ***** Редактировать файл - engine/inc/cmoderation.php
@@ -76,8 +124,9 @@ $db->query( "DELETE FROM " . PREFIX . "_comments WHERE id='$c_id'" );
 $comments = $db->safesql( $parse->BB_Parse( $parse->process( $_POST['selected_text'][$c_id] ), $use_html ) );
 require_once ENGINE_DIR . '/modules/cleantalk/cleantalk.php';
 $Ct->moderate($comments, 0);
-$comm_update = $Ct->delComment($comm_update);
 // End: cleantalk.ru
+
+
 
 
 ***** Редактировать файл - engine/ajax/editcomments.php
@@ -93,10 +142,21 @@ $comm_update = $Ct->delComment($comm_update);
 // End: cleantalk.ru
 
 
+***** Редактировать файл - engine/classes/js/dle_js.js
+После
+"engine/ajax/addcomments.php",{
+
+Добавить (Никаких лишних пробелов и пустых строк)
+ct_checkjs:a.ct_checkjs.value,
+
+Проверка
+  было - "engine/ajax/addcomments.php",{post_id
+  стало - "engine/ajax/addcomments.php",{ct_checkjs:a.ct_checkjs.value,post_id
+
+
 ***** Скопировать модуль в корень сайта
-Скопируйте архив Cleantalk.SpamProtect-dle-1.1.0.zip в домашнюю папку сервера
-выполните команду
-$ uzip Cleantalk.SpamProtect-dle-1.1.0.zip 
+Распакуйте Cleantalk.SpamProtect.1.2.2.zip
+Скопируйте, с заменой, файлы из корня папки Cleantalk.SpamProtect.1.2.2 в корень папки с DLE.
 
 
 ***** Перейти по ссылке admin.php?mod=cleantalk

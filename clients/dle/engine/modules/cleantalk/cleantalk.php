@@ -2,7 +2,7 @@
 
 /**
  * Cleantalk DLE Module Class
- * @version 1.1.0
+ * @version 1.2.2
  * @package Cleantalk
  * @subpackage Dle
  * @author Сleantalk team (shagimuratov@cleantalk.ru)
@@ -30,19 +30,13 @@ class CleantalkModule {
      * Client version
      * @var string
      */
-    private $engine = 'dle-110';
+    private $engine = 'dle-122';
 
     /**
      * Cleantalk comment
      * @var string
      */
     public $comment;
-
-    /**
-     * Is black list message
-     * @var int 0|1
-     */
-    public $blacklisted = 0;
 
     /**
      * Errno status
@@ -83,9 +77,8 @@ class CleantalkModule {
         $this->db = $db;
         $this->config = $this->getAllConfig();
         $this->CT = $this->getCleantalk();
-        $this->ip = $_SERVER['REMOTE_ADDR'];
+        $this->user_ip = isset($_SERVER['REMOTE_ADDR']) && preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/", $_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
         $this->lang = $this->getFullLang();
-		$this->user_ip = isset($_SERVER['REMOTE_ADDR']) && preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/", $_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null; 
     }
 
     /**
@@ -108,6 +101,16 @@ class CleantalkModule {
             return $this->config[$name];
         }
         return false;
+    }
+
+    /**
+     * Set config parametr
+     * @param type $key
+     * @param type $value
+     */
+    public function setConfig($key, $value) {
+        $this->db->query("UPDATE  `" . PREFIX . "_ct_config` SET `value`='{$value}'  WHERE `key`='{$key}'");
+        $this->config = $this->getAllConfig();
     }
 
     /**
@@ -152,6 +155,134 @@ class CleantalkModule {
     }
 
     /**
+     * Send Method
+     * @param type $method
+     * @param type $params
+     * @return null|int
+     */
+    function sendRequest($method, $params) {
+        //$params = array_map('charset_from', $params);
+        $r = 1;
+        switch ($method) {
+            case 'check_message':
+                $sender_id = $this->CT->getSenderId();
+                $params_rpc = array(
+                    $params['message'],
+                    $params['base_text'],
+                    $this->config['ct_key'],
+                    $this->engine,
+                    $params['user_info'],
+                    $this->config['ct_stop_words'],
+                    $this->config['ct_language'],
+                    $params['session_ip'],
+                    $params['user_email'],
+                    $params['user_name'],
+                    $sender_id,
+                    $this->config['ct_links'],
+                    $params['submit_time'],
+                    $params['checkjs']
+                );
+                break;
+            case 'check_newuser':
+                $params_rpc = array(
+                    $this->config['ct_key'],
+                    $this->engine,
+                    $this->config['ct_language'],
+                    $params['session_ip'],
+                    $params['user_email'],
+                    $params['user_name'],
+                    $params['tz'],
+                    $params['submit_time'],
+                    $params['js_on'],
+                );
+                break;
+            case 'send_feedback':
+                $feedback = array();
+                foreach ($params['moderate'] as $msgFeedback)
+                    $feedback[] = $msgFeedback['msg_hash'] . ':' . intval($msgFeedback['is_allow']);
+
+                $feedback = implode(';', $feedback);
+
+                $params_rpc = array(
+                    $CT->config['auth_key'],
+                    $feedback
+                );
+                break;
+            default:
+                $params_rpc = array();
+                return NULL;
+        }
+
+        $plugin_url = $this->CT->config['server_url'];
+        $result = NULL;
+
+        if ((isset($this->config['ct_work_url']) && $this->config['ct_work_url'] !== '') &&
+                ($this->config['ct_server_changed'] + $this->config['ct_server_ttl'] > time())) {
+            $result = $this->CT->xmlRequest2(
+                    $method, $params_rpc, $this->config['ct_work_url']
+            );
+        }
+
+        if (!isset($result) || $result->faultCode()) {
+            $matches = array();
+            preg_match("#^(http://|https://)([a-z\.\-0-9]+):?(\d*)$#i", $plugin_url, $matches);
+            $url_prefix = $matches[1];
+            $pool = $matches[2];
+            $port = $matches[3];
+            if (empty($url_prefix))
+                $url_prefix = 'http://';
+            if (empty($pool)) {
+                $result = array(
+                    'allow' => 0,
+                    'comment' => 'Can\'t connect to cleantalk.ru',
+                    'blacklisted' => 0,
+                );
+            } else {
+                foreach ($this->CT->get_servers_ip($pool) as $server) {
+                    $server_host = gethostbyaddr($server['ip']);
+                    $work_url = $url_prefix . $server_host;
+                    if ($server['host'] === 'localhost')
+                        $work_url = $url_prefix . $server['host'];
+
+                    $work_url = ($port !== '') ? $work_url . ':' . $port : $work_url;
+
+                    $result = $this->CT->xmlRequest2(
+                            $method, $params_rpc, $work_url
+                    );
+
+                    if (!$result->faultCode()) {
+                        $this->setConfig('ct_work_url', $work_url);
+                        $this->setConfig('ct_server_ttl', $server['ttl']);
+                        $this->setConfig('ct_server_changed', time());
+                        break;
+                    }
+                }
+                if (!$result) {
+                    $work_url = $this->config['ct_server_url'];
+                    $result = $this->CT->xmlRequest2(
+                            $method, $params_rpc, $work_url
+                    );
+                }
+            }
+        }
+
+        if (is_object($result) && !$result->faultCode()) {
+            $result = $result->value();
+
+            if ($method === 'check_message' && $sender_id == '' && isset($result['sender_id']))
+                $this->CT->setSenderId($result['sender_id']);
+        }else {
+            $result = array(
+                'allow' => 0,
+                'comment' => 'Can\'t connect to cleantalk.ru',
+                'blacklisted' => 0,
+            );
+        }
+
+        return $result;
+    }
+
+    /**
      * Check to publish comment
      * @param type $comment
      * @param type $ct_text
@@ -159,52 +290,29 @@ class CleantalkModule {
      * @param type $name
      * @return boolean|$result
      */
-    public function checkMessage($comment, $ct_text, $mail, $name) {
+    public function checkMessage($comment, $ct_text, $mail, $name, $checkjs) {
+        $comment = charset_from($comment, $this->dle_config['charset']);
+        $ct_text = charset_from($ct_text, $this->dle_config['charset']);
+        $mail = charset_from($mail, $this->dle_config['charset']);
+        $name = charset_from($name, $this->dle_config['charset']);
+
+        $ct_submit_time = time() - $_SESSION['ct_submit_comment_time'];
         $params = array(
-            $comment,
-            $ct_text,
-            $this->config['ct_key'],
-            $this->engine,
-            '',
-            $this->config['ct_stop_words'],
-            $this->config['ct_language'],
-            $this->user_ip,
-            $mail,
-            $name,
-            $this->CT->getSenderId(),
-            $this->config['ct_links']
+            'message' => $comment,
+            'base_text' => $ct_text,
+            'user_email' => $mail,
+            'user_name' => $name,
+            'submit_time' => $ct_submit_time,
+            'checkjs' => $checkjs,
+            'session_ip' => $this->user_ip,
+            'user_info' => '',
         );
+        $_SESSION['ct_submit_comment_time'] = time();
 
-        $result = $this->CT->xmlRequest2(
-                'check_message', $params, $this->config['ct_server_url']
-        );
+        $result = $this->sendRequest('check_message', $params);
 
-        if ($result) {
-            $this->errno = $result->errno;
-
-            if (is_array($result->val)) {
-                $this->comment = $result->val['comment'];
-
-                if ($result->val['blacklisted'] == 1) {
-                    $this->blacklisted = $result->val['blacklisted'];
-                    return false;
-                }
-
-                if ($result->val['allow'] == 0) {
-                    return false;
-                }
-                return true;
-            } elseif ($result->errno > 0) {
-                $this->comment = "*** Can't connect to cleantalk.ru***";
-                $this->feedbackAdmin($this->getLang('ct_email_cant_connect_subject'), $this->getLang('ct_email_cant_connect_text'));
-                return false;
-            } else {
-                $this->comment = $result->val['comment'];
-                return true;
-            }
-        }
-
-        return true;
+        $result = charset($result, $this->dle_config['charset']);
+        return $result;
     }
 
     /**
@@ -242,7 +350,8 @@ class CleantalkModule {
             ),
         );
 
-        $this->CT->sendFeedback($params, $response);
+        $result = $this->sendRequest('send_feedback', $params);
+        return $result;
     }
 
     /**
@@ -253,13 +362,26 @@ class CleantalkModule {
      * @return boolean
      */
     public function isAllowUser($email, $username) {
+        $email = charset_from($email, $this->dle_config['charset']);
+        $username = charset_from($username, $this->dle_config['charset']);
+
+        $ct_submit_register_time = time() - $_SESSION['ct_submit_register_time'];
+        $checkjs = (int) substr($_POST['ct_checkjs'], 0, 1);
+        if ($checkjs !== 0 && $checkjs !== 1) {
+            $checkjs = 0;
+        }
+
         $params = array(
             'engine' => $this->engine,
-            'ip' => $this->user_ip,
-            'email' => $email,
-            'username' => $username
+            'session_ip' => $this->user_ip,
+            'user_email' => $email,
+            'user_name' => $username,
+            'submit_time' => $ct_submit_register_time,
+            'js_on' => $checkjs,
+            'tz' => null,
         );
-        $result = $this->CT->isAllowUser($params, $response);
+        $response = $this->sendRequest('check_newuser', $params);
+        $response = charset($response, $this->dle_config['charset']);
 
         if (is_array($response)) {
             $this->comment = $response['comment'];

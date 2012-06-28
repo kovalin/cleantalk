@@ -22,6 +22,11 @@ function ct_get_config($db) {
     return array($config, $config_serialized);
 }
 
+/*
+ * ct_server_changed
+ct_server_ttl
+ct_work_url
+ */
 
 /**
  * Список доступных языков
@@ -50,4 +55,49 @@ function debug($var, $stop = 0) {
         exit();
     }
 }
+
+function charset($items, $charset){
+    if ($charset == 'utf-8') {
+        return $items;
+    }
+
+    if (is_array($items)) {
+        foreach ($items as $key=>&$item) {
+            if(is_array($item)) {
+                charset($item, $charset);
+            } else {
+                $item = iconv("UTF-8", $charset, $item);
+
+            }
+        }
+
+        return $items;
+    } else {
+        $items = iconv("UTF-8", $charset, $items);
+        return $items;
+    }
+}
+
+function charset_from($items, $charset){
+    if ($charset == 'utf-8') {
+        return $items;
+    }
+
+    if (is_array($items)) {
+        foreach ($items as $key=>&$item) {
+            if(is_array($item)) {
+                charset($item, $charset);
+            } else {
+                $item = iconv($charset, "UTF-8", $item);
+
+            }
+        }
+
+        return $items;
+    } else {
+        $items = iconv($charset, "UTF-8", $items);
+        return $items;
+    }
+}
+
 ?>

@@ -19,26 +19,27 @@ if (in_array($member_id['user_group'], $Ct->getConfig('ct_groups')) && !$CN_HALT
 
     $ct_text = $db->safesql($ct_text);
 
-    if ($Ct->checkMessage($comments, $ct_text, $mail, $name) === false) {
-        if ($Ct->errno == 0) {
-            if ($Ct->blacklisted == 0) {
-                $config['allow_cmod'] = $user_group[$member_id['user_group']]['allow_modc'] = true;
-                $comments = $Ct->addComment($comments, $Ct->comment);
-                /**
-                 * Отключение объединения
-                 */
-                $config['allow_combine'] = false;
-            } else {
-                $stop[] = $Ct->comment;
-                $CN_HALT = TRUE;
-            }
-        } else {
-            // Клинтолк не доступен
-            $config['allow_cmod'] = $user_group[$member_id['user_group']]['allow_modc'] = true;
-            $comments = $Ct->addComment($comments, $Ct->comment);
-            $config['allow_combine'] = false;
-        }
-    } else {
+    /* print_r($Ct->sendRequest('check_message', array(
+      'message' => $comments,
+      'base_text' => $ct_text,
+      'user_email' => $mail,
+      'user_name' => $name,
+      'message' => $comments,
+      'submit_time' => 60,
+      'checkjs' => 1,
+      'session_ip' => '',
+      'user_info' => '',
+      )));
+      exit(); */
+
+    $checkjs = (int) substr($_POST['ct_checkjs'], 0, 1);
+    if ($checkjs !== 0 && $checkjs !== 1) {
+        $checkjs = 0;
+    }
+
+    $result = $Ct->checkMessage($comments, $ct_text, $mail, $name, $checkjs);
+
+    if ($result['allow'] == 1) {
         /**
          * Отключение премодерации
          */
@@ -55,10 +56,22 @@ if (in_array($member_id['user_group'], $Ct->getConfig('ct_groups')) && !$CN_HALT
                 }
             }
         }
+    } else {
+        if (isset($result['blacklisted']) && $result['blacklisted'] == 1) {
+            $stop[] = $result['comment'];
+            $CN_HALT = TRUE;
+        } else {
+            $config['allow_cmod'] = $user_group[$member_id['user_group']]['allow_modc'] = true;
+            $comments = $Ct->addComment($comments, $result['comment']);
+
+            /**
+             * Отключение объединения
+             */
+            $config['allow_combine'] = false;
+        }
     }
 
-
-    $ct_log_extras = 'Username: ' . $name . ', email: ' . $mail . '. ' . $Ct->comment;
+    $ct_log_extras = 'Username: ' . $name . ', email: ' . $mail . '. ' . $result['comment'];
     $ct_if_exists_log = $db->super_query('show tables like "' . USERPREFIX . '_admin_logs"');
     if (!empty($ct_if_exists_log)) {
         $db->query("INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values ('$name', '{$_TIME}', '{$_IP}', '0', '" . $db->safesql($ct_log_extras) . "')");
